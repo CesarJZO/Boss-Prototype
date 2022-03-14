@@ -3,29 +3,48 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] float _jumpForce;
-    [SerializeField] float _speed;
+    public float jumpForce;
+    public float speed;
     PlayerInput _input;
-    InputAction _direction;
-    Rigidbody2D _body;
+    [HideInInspector] public Rigidbody2D body;
+    public BoxCollider2D groundSensor;
+
+    public StateMachine stateMachine;
+    public Moving moving;
+    public Jumping jumping;
+    public Idling idling;
+
     void Awake()
     {
         _input = GetComponent<PlayerInput>();
-        _direction = _input.actions["Move"];
-        _body = GetComponent<Rigidbody2D>();
+        body = GetComponent<Rigidbody2D>();
+    }
+
+    #region Actions
+
+
+    #endregion
+
+    void Start()
+    {
+        stateMachine = new StateMachine();
+
+        moving = new Moving(this, stateMachine);
+        jumping = new Jumping(this, stateMachine);
+        idling = new Idling(this, stateMachine);
+
+        stateMachine.Initialize(idling);
+    }
+
+    void Update()
+    {
+        stateMachine.CurrentState.HandleInput(_input);
+
+        stateMachine.CurrentState.LogicUpdate();
     }
 
     void FixedUpdate()
     {
-        Vector2 direction = new Vector2(
-            _direction.ReadValue<Vector2>().x * _speed,
-            _body.velocity.y
-        );
-        _body.velocity = direction;
-    }
-
-    void OnJump()
-    {
-        _body.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
+        stateMachine.CurrentState.PhysicsUpdate();
     }
 }
