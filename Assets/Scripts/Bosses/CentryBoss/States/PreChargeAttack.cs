@@ -22,7 +22,6 @@ namespace EKP.Bosses.Centry
         public override void Exit()
         {
             base.Exit();
-            bossMachine.ChangeState(boss.chargeAttack);
         }
     }
 }
