@@ -1,3 +1,5 @@
+using UnityEngine;
+using System.Collections;
 namespace EKP.Bosses.Centry
 {
     public class SwordAttack : BossState<CentryBoss>
@@ -7,9 +9,15 @@ namespace EKP.Bosses.Centry
         public override void Enter()
         {
             base.Enter();
+            Debug.Log("Sword attack: Enter");
+            boss.StartCoroutine(Attack());
         }
 
-
+        IEnumerator Attack()
+        {
+            yield return new WaitForSeconds(2);
+            bossMachine.ChangeState(boss.idling);
+        }
 
         public override void Exit()
         {

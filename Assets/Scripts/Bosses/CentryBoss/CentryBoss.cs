@@ -3,8 +3,12 @@ namespace EKP.Bosses.Centry
 {
     public class CentryBoss : MonoBehaviour
     {
-        [HideInInspector] Rigidbody2D body;
+        [HideInInspector] public Rigidbody2D body;
         BossMachine<CentryBoss> _bossMachine;
+        
+        [Header("Waiting time range")]
+        public float minTime;
+        public float maxTime;
 
         #region States
         public Idling idling;
@@ -18,19 +22,19 @@ namespace EKP.Bosses.Centry
         public SpikeAttack spikeAttack;
         #endregion
 
-
+        #region MonoBehaviour methods 
         void Awake()
         {
-            _bossMachine    = new BossMachine<CentryBoss>();
-            idling          = new Idling(this, _bossMachine);
-            forwardDash     = new ForwardDash(this, _bossMachine);
-            backJump        = new BackJump(this, _bossMachine);
-            preSwordAttack  = new PreSwordAttack(this, _bossMachine);
-            swordAttack     = new SwordAttack(this, _bossMachine);
+            _bossMachine = new BossMachine<CentryBoss>();
+            idling = new Idling(this, _bossMachine);
+            forwardDash = new ForwardDash(this, _bossMachine);
+            backJump = new BackJump(this, _bossMachine);
+            preSwordAttack = new PreSwordAttack(this, _bossMachine);
+            swordAttack = new SwordAttack(this, _bossMachine);
             preChargeAttack = new PreChargeAttack(this, _bossMachine);
-            chargeAttack    = new ChargeAttack(this, _bossMachine);
-            preSpikeAttack  = new PreSpikeAttack(this, _bossMachine);
-            spikeAttack     = new SpikeAttack(this, _bossMachine);
+            chargeAttack = new ChargeAttack(this, _bossMachine);
+            preSpikeAttack = new PreSpikeAttack(this, _bossMachine);
+            spikeAttack = new SpikeAttack(this, _bossMachine);
 
             body = GetComponent<Rigidbody2D>();
         }
@@ -49,5 +53,6 @@ namespace EKP.Bosses.Centry
         {
             _bossMachine.CurrentState.PhysicsUpdate();
         }
+        #endregion
     }
 }

@@ -2,12 +2,12 @@ namespace EKP.Bosses
 {
     public abstract class BossState<Boss>
     {
-        protected Boss _boss;
-        protected BossMachine<Boss> _bossMachine;
+        protected Boss boss;
+        protected BossMachine<Boss> bossMachine;
         protected BossState(Boss boss, BossMachine<Boss> bossMachine)
         {
-            _boss = boss;
-            _bossMachine = bossMachine;
+            this.boss = boss;
+            this.bossMachine = bossMachine;
         }
 
         public virtual void Enter() { }
