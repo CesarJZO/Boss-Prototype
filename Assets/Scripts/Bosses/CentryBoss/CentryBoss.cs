@@ -1,14 +1,18 @@
 using UnityEngine;
+using UnityEngine.Events;
 namespace EKP.Bosses.Centry
 {
     public class CentryBoss : MonoBehaviour
     {
-        [HideInInspector] public Rigidbody2D body;
-        BossMachine<CentryBoss> _bossMachine;
-        
         [Header("Waiting time range")]
         public float minTime;
         public float maxTime;
+        [Header("Behaviour")]
+        public Transform leftPosition;
+        public Transform rightPosition;
+        public UnityEvent<string> OnChangeState;
+        [HideInInspector] public Rigidbody2D body;
+        BossMachine<CentryBoss> _bossMachine;
 
         #region States
         public Idling idling;

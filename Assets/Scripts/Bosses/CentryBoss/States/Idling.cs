@@ -12,6 +12,7 @@ namespace EKP.Bosses.Centry
         public override void Enter()
         {
             base.Enter();
+            boss.OnChangeState?.Invoke("Idle");
             boss.StartCoroutine(StateManager());
         }
 
@@ -23,19 +24,19 @@ namespace EKP.Bosses.Centry
 
             if (boss.preSwordAttack.counter < _totalOfSwordAttacks)
             {
-                Debug.Log($"Sword attacks until now {boss.preSwordAttack.counter}");
+                Debug.Log($"Sword attacks so far: {boss.preSwordAttack.counter}");
                 bossMachine.ChangeState(boss.preSwordAttack);
             }
             else
             {
                 Debug.Log("Enough of sword, lo que caiga!");
-                StartRandomAttack(Random.Range(1, 6));
+                StartRandomMove(Random.Range(1, 6));
             }
         }
 
-        void StartRandomAttack(int randomAttack)
+        void StartRandomMove(int randomMove)
         {
-            switch (randomAttack)
+            switch (randomMove)
             {
                 case 1:
                     bossMachine.ChangeState(boss.forwardDash);

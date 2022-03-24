@@ -10,6 +10,7 @@ namespace EKP.Bosses.Centry
         {
             base.Enter();
             Debug.Log("Spike attack: Enter");
+            boss.OnChangeState?.Invoke("Spike Attack");
             boss.StartCoroutine(Attack());
         }
 

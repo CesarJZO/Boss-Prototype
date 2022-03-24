@@ -10,6 +10,7 @@ namespace EKP.Bosses.Centry
         {
             base.Enter();
             Debug.Log("Spike attack: Anticipation");
+            boss.OnChangeState?.Invoke("Pre Spike Attack");
             boss.StartCoroutine(Anticipate());
         }
 

@@ -9,6 +9,7 @@ namespace EKP.Bosses.Centry
         {
             base.Enter();
             Debug.Log("Back jump: Enter");
+            boss.OnChangeState?.Invoke("Back Jump");
             boss.StartCoroutine(Jump());
         }
 

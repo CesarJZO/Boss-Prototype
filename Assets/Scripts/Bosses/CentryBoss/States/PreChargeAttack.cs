@@ -10,6 +10,7 @@ namespace EKP.Bosses.Centry
         {
             base.Enter();
             Debug.Log("Charge attack: Anticipation");
+            boss.OnChangeState?.Invoke("Pre Charge Attack");
             boss.StartCoroutine(Anticipate());
         }
 

@@ -11,6 +11,7 @@ namespace EKP.Bosses.Centry
         {
             base.Enter();
             Debug.Log("Sword attack: Anticipation");
+            boss.OnChangeState?.Invoke("Pre Sword Attack");
             counter++;
             boss.StartCoroutine(Anticipate());
         }

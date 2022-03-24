@@ -10,6 +10,7 @@ namespace EKP.Bosses.Centry
         {
             base.Enter();
             Debug.Log("Charge attack: Enter");
+            boss.OnChangeState?.Invoke("Charge Attack");
             boss.StartCoroutine(Attack());
         }
 
