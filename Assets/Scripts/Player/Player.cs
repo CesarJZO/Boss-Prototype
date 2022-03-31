@@ -7,12 +7,14 @@ public class Player : MonoBehaviour
     public float speed;
     PlayerInput _input;
     [HideInInspector] public Rigidbody2D body;
-    public BoxCollider2D groundSensor;
+    public RaycastHit2D groundSensor;
 
     public StateMachine stateMachine;
     public Moving moving;
     public Jumping jumping;
     public Idling idling;
+    [SerializeField] float _groundHeight;
+    [SerializeField] LayerMask _groundMask;
 
     void Awake()
     {
@@ -46,5 +48,14 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
         stateMachine.CurrentState.PhysicsUpdate();
+        groundSensor = Physics2D.Raycast(
+            transform.position, Vector2.down,
+            _groundHeight, _groundMask);
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(transform.position, transform.position + Vector3.down * _groundHeight);
     }
 }

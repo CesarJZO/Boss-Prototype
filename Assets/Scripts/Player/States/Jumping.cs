@@ -4,7 +4,6 @@ public class Jumping : State
 {
     bool land;
     Vector2 velocity;
-    const int GROUND_LAYER = 3;
     public Jumping(Player player, StateMachine stateMachine) : base(player, stateMachine) { }
 
     void Jump()
@@ -23,7 +22,6 @@ public class Jumping : State
     {
         base.HandleInput(input);
         velocity.x = input.actions[ActionNames.Move].ReadValue<Vector2>().x * player.speed / 2;
-        velocity.y = player.body.velocity.y;
     }
     public override void LogicUpdate()
     {
@@ -41,6 +39,7 @@ public class Jumping : State
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
-        land = player.groundSensor.IsTouchingLayers(GROUND_LAYER);
+        velocity.y = player.body.velocity.y;
+        land = player.groundSensor;
     }
 }
