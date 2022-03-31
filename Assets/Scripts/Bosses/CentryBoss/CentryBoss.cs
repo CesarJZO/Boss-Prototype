@@ -2,15 +2,28 @@ using UnityEngine;
 using UnityEngine.Events;
 namespace EKP.Bosses.Centry
 {
+
+    // TODO: Draw line for gizmos, move using buildings+offset positions, add groundSensor
+    
     public class CentryBoss : MonoBehaviour
     {
+        [Header("Debug")]
+        public bool automaticBehaviour;
+        public Action action;
+
         [Header("Waiting time range")]
         public float minTime;
         public float maxTime;
-        [Header("Behaviour")]
-        public Transform leftPosition;
-        public Transform rightPosition;
+
+        [Header("Movement")]
+        public float attacksDuration = 2f;
+        public float smoothTime;
+        [SerializeField] Vector2 buildingOffset;
+        public Transform leftBuilding;
+        public Transform rightBuilding;
         public UnityEvent<string> OnChangeState;
+        public Vector2 LeftPosition => (Vector2)leftBuilding.position + buildingOffset;
+        public Vector2 RightPosition => (Vector2)rightBuilding.position + buildingOffset;
         [HideInInspector] public Rigidbody2D body;
         BossMachine<CentryBoss> _bossMachine;
 
@@ -57,6 +70,21 @@ namespace EKP.Bosses.Centry
         {
             _bossMachine.CurrentState.PhysicsUpdate();
         }
+
+        void OnDrawGizmos()
+        {
+            Gizmos.DrawLine(leftBuilding.position, LeftPosition);
+            Gizmos.DrawLine(rightBuilding.position, RightPosition);
+        }
         #endregion
+    }
+
+    public enum Action
+    {
+        Dash,
+        Jump,
+        SwordAttack,
+        ChargeAttack,
+        SpikeAttack
     }
 }

@@ -1,5 +1,8 @@
 using System.Collections;
 using UnityEngine;
+
+using UnityEngine.InputSystem;
+
 namespace EKP.Bosses.Centry
 {
     public class Idling : BossState<CentryBoss>
@@ -13,7 +16,7 @@ namespace EKP.Bosses.Centry
         {
             base.Enter();
             boss.OnChangeState?.Invoke("Idle");
-            boss.StartCoroutine(StateManager());
+            if (boss.automaticBehaviour) boss.StartCoroutine(StateManager());
         }
 
         IEnumerator StateManager()
@@ -30,7 +33,7 @@ namespace EKP.Bosses.Centry
             else
             {
                 Debug.Log("Enough of sword, lo que caiga!");
-                StartRandomMove(Random.Range(1, 6));
+                StartRandomMove(Random.Range(1, 5));
             }
         }
 
@@ -38,22 +41,40 @@ namespace EKP.Bosses.Centry
         {
             switch (randomMove)
             {
-                case 1:
-                    bossMachine.ChangeState(boss.forwardDash);
-                    break;
-                case 2:
-                    bossMachine.ChangeState(boss.backJump);
-                    break;
-                case 3:
-                    bossMachine.ChangeState(boss.preSwordAttack);
-                    break;
-                case 4:
-                    bossMachine.ChangeState(boss.preSpikeAttack);
-                    break;
-                case 5:
-                    bossMachine.ChangeState(boss.preChargeAttack);
-                    break;
+                case 1: Move(); break;
+                case 2: bossMachine.ChangeState(boss.preSwordAttack); break;
+                case 3: bossMachine.ChangeState(boss.preSpikeAttack); break;
+                case 4: bossMachine.ChangeState(boss.preChargeAttack); break;
             }
         }
+
+        void Move()
+        {   // TODO: If touching leftBuilding, jump, if touching rightBuilding, dash
+            if (Random.Range(0, 2) % 2 == 0)
+                bossMachine.ChangeState(boss.forwardDash);
+            else
+                bossMachine.ChangeState(boss.backJump);
+        }
+
+        // * Debug
+        
+        public override void LogicUpdate()
+        {
+            base.LogicUpdate();
+            
+            if (Keyboard.current.spaceKey.wasPressedThisFrame)
+            {
+                switch (boss.action)
+                {
+                    case Action.Dash: bossMachine.ChangeState(boss.forwardDash); break;
+                    case Action.Jump: bossMachine.ChangeState(boss.backJump); break;
+                    case Action.SwordAttack: bossMachine.ChangeState(boss.preSwordAttack); break;
+                    case Action.ChargeAttack: bossMachine.ChangeState(boss.preChargeAttack); break;
+                    case Action.SpikeAttack: bossMachine.ChangeState(boss.preSpikeAttack); break;
+                }
+            }
+        }
+
+        // * End Debug
     }
 }
