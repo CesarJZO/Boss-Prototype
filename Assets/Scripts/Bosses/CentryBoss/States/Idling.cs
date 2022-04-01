@@ -61,18 +61,19 @@ namespace EKP.Bosses.Centry
         public override void LogicUpdate()
         {
             base.LogicUpdate();
+            var keyboard = Keyboard.current;
             
-            if (Keyboard.current.spaceKey.wasPressedThisFrame)
-            {
-                switch (boss.action)
-                {
-                    case Action.Dash: bossMachine.ChangeState(boss.forwardDash); break;
-                    case Action.Jump: bossMachine.ChangeState(boss.backJump); break;
-                    case Action.SwordAttack: bossMachine.ChangeState(boss.preSwordAttack); break;
-                    case Action.ChargeAttack: bossMachine.ChangeState(boss.preChargeAttack); break;
-                    case Action.SpikeAttack: bossMachine.ChangeState(boss.preSpikeAttack); break;
-                }
-            }
+            if (keyboard.dKey.wasPressedThisFrame)
+                bossMachine.ChangeState(boss.forwardDash);
+            if (keyboard.jKey.wasPressedThisFrame)
+                bossMachine.ChangeState(boss.backJump);
+            if (keyboard.sKey.wasPressedThisFrame)
+                bossMachine.ChangeState(boss.preSwordAttack);
+            if (keyboard.cKey.wasPressedThisFrame)
+                bossMachine.ChangeState(boss.preChargeAttack);
+            if (keyboard.pKey.wasPressedThisFrame)
+                bossMachine.ChangeState(boss.preSpikeAttack);
+            
         }
 
         // * End Debug

@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
+
+using UnityEngine.InputSystem;
 namespace EKP.Bosses.Centry
 {
 
@@ -8,7 +10,6 @@ namespace EKP.Bosses.Centry
     {
         [Header("Debug")]
         public bool automaticBehaviour;
-        public Action action;
 
         [Header("Waiting time range")]
         public float minTime;
@@ -63,6 +64,12 @@ namespace EKP.Bosses.Centry
         void Update()
         {
             _bossMachine.CurrentState.LogicUpdate();
+            // * Debug
+            if (Keyboard.current.rKey.wasPressedThisFrame)
+            {
+                transform.position = rightBuilding.position;
+                _bossMachine.ChangeState(idling);
+            }
         }
 
         void FixedUpdate()
@@ -76,14 +83,5 @@ namespace EKP.Bosses.Centry
             Gizmos.DrawLine(transform.position, transform.position + (Vector3)jumpDirection);
         }
         #endregion
-    }
-
-    public enum Action
-    {
-        Dash,
-        Jump,
-        SwordAttack,
-        ChargeAttack,
-        SpikeAttack
     }
 }
