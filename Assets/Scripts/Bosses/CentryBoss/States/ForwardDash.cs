@@ -19,10 +19,11 @@ namespace EKP.Bosses.Centry
         {
             base.PhysicsUpdate();
             boss.body.MovePosition(Vector2.SmoothDamp(
-                boss.transform.position, boss.LeftPosition,
+                boss.transform.position, boss.leftBuilding.position,
                 ref _velocity, boss.smoothTime
             ));
-            if (Vector2.Distance(boss.transform.position, boss.LeftPosition) < 0.12f)
+            // Debug.Log(Vector2.Distance(boss.transform.position, boss.leftBuilding.position));
+            if (Vector2.Distance(boss.transform.position, boss.leftBuilding.position) < 0.55f)
                 bossMachine.ChangeState(boss.idling);
         }
     }

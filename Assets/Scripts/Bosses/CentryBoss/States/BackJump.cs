@@ -10,6 +10,7 @@ namespace EKP.Bosses.Centry
             base.Enter();
             Debug.Log("Back jump: Enter");
             boss.OnChangeState?.Invoke("Back Jump");
+            boss.body.AddForce(boss.jumpDirection * boss.jumpStrength, ForceMode2D.Impulse);
             boss.StartCoroutine(Jump());
         }
 
