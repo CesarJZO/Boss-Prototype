@@ -8,13 +8,14 @@ namespace EKP.Bosses.Centry
     {
         [Header("Debug")]
         public bool automaticBehaviour;
+        [SerializeField] LayerMask _groundLayer;
         public float _groundDistance;
-        [SerializeField] float _margin = 0.5f;
+        [SerializeField] float _margin;
 
         [Header("Waiting time range")]
         public float minTime;
         public float maxTime;
-        public float attacksDuration = 2f;
+        public float attacksDuration;
 
         [Header("Movement")]
         public float smoothTime;
@@ -22,12 +23,17 @@ namespace EKP.Bosses.Centry
         public Transform rightBuilding;
 
         [Header("Jump")]
-        public Vector2 jumpDirection;
+        [SerializeField, Range(0f, 180f)] float jumpAngle;
         public float jumpStrength;
+        public float fallingDrag;
+        [HideInInspector] public Vector2 jumpDirection;
         public UnityEvent<string> OnChangeState;
 
-        public RaycastHit2D Grounded => Physics2D.Raycast(transform.position, Vector2.down * _groundDistance);
+        public RaycastHit2D Grounded => Physics2D.Raycast(transform.position, Vector2.down, _groundDistance, _groundLayer);
         public bool CloseToTarget => Vector2.Distance(body.position, target) < _margin;
+        public bool IsAlignedWithTarget => Vector2.Distance(
+            new Vector2(transform.position.x, 0), new Vector2(target.x, 0)
+        ) < _margin;
 
         [HideInInspector] public Rigidbody2D body;
         [HideInInspector] public Vector2 target;
@@ -60,7 +66,7 @@ namespace EKP.Bosses.Centry
             spikeAttack = new SpikeAttack(this, _bossMachine);
 
             body = GetComponent<Rigidbody2D>();
-            jumpDirection.Normalize();
+            
         }
 
         void Start()
@@ -72,6 +78,7 @@ namespace EKP.Bosses.Centry
         void Update()
         {
             _bossMachine.CurrentState.LogicUpdate();
+            jumpDirection = Quaternion.Euler(0, 0, jumpAngle) * Vector2.right;
             // * Debug: Restart
             if (Keyboard.current.rKey.wasPressedThisFrame)
             {
@@ -88,15 +95,15 @@ namespace EKP.Bosses.Centry
         void OnDrawGizmos()
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, transform.position + (Vector3)jumpDirection);
-            Vector3 line = new Vector3(0, 15, 0);
+            Gizmos.DrawLine(transform.position, transform.position + Quaternion.Euler(0, 0, jumpAngle) * Vector3.right);
 
             Gizmos.color = Color.blue;
-            Gizmos.DrawLine(leftBuilding.position - line, leftBuilding.position + line);
-            Gizmos.DrawLine(rightBuilding.position - line, rightBuilding.position + line);
+            float distance = 30;
+            Gizmos.DrawLine(leftBuilding.position + Vector3.down * distance, leftBuilding.position + Vector3.up * distance);
+            Gizmos.DrawLine(rightBuilding.position + Vector3.down * distance, rightBuilding.position + Vector3.up * distance);
 
             Gizmos.color = Color.cyan;
-            Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y -_groundDistance));
+            Gizmos.DrawLine(transform.position, Vector3.down * _groundDistance + transform.position);
         }
         #endregion
     }
