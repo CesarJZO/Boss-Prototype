@@ -9,14 +9,14 @@ namespace EKP.Bosses.Centry
         public override void Enter()
         {
             base.Enter();
-            Debug.Log("Spike attack: Enter");
+            // Debug.Log("Spike attack: Enter");
             boss.OnChangeState?.Invoke("Spike Attack");
             boss.StartCoroutine(Attack());
         }
 
         IEnumerator Attack()
         {
-            yield return new WaitForSeconds(2);
+            yield return new WaitForSeconds(boss.attacksDuration);
             bossMachine.ChangeState(boss.idling);
         }
 

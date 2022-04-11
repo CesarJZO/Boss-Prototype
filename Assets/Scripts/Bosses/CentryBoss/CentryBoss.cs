@@ -4,26 +4,33 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 namespace EKP.Bosses.Centry
 {
-
-    // TODO: Draw line for gizmos, move using buildings+offset positions, add groundSensor
     public class CentryBoss : MonoBehaviour
     {
         [Header("Debug")]
         public bool automaticBehaviour;
+        public float _groundDistance;
+        [SerializeField] float _margin = 0.5f;
 
         [Header("Waiting time range")]
         public float minTime;
         public float maxTime;
+        public float attacksDuration = 2f;
 
         [Header("Movement")]
-        public float attacksDuration = 2f;
         public float smoothTime;
-        public Vector2 jumpDirection;
-        public float jumpStrength;
         public Transform leftBuilding;
         public Transform rightBuilding;
+
+        [Header("Jump")]
+        public Vector2 jumpDirection;
+        public float jumpStrength;
         public UnityEvent<string> OnChangeState;
+
+        public RaycastHit2D Grounded => Physics2D.Raycast(transform.position, Vector2.down * _groundDistance);
+        public bool CloseToTarget => Vector2.Distance(body.position, target) < _margin;
+
         [HideInInspector] public Rigidbody2D body;
+        [HideInInspector] public Vector2 target;
         BossMachine<CentryBoss> _bossMachine;
 
         #region States
@@ -58,13 +65,14 @@ namespace EKP.Bosses.Centry
 
         void Start()
         {
+            target = leftBuilding.position;
             _bossMachine.Initialize(idling);
         }
 
         void Update()
         {
             _bossMachine.CurrentState.LogicUpdate();
-            // * Debug
+            // * Debug: Restart
             if (Keyboard.current.rKey.wasPressedThisFrame)
             {
                 transform.position = rightBuilding.position;
@@ -81,6 +89,14 @@ namespace EKP.Bosses.Centry
         {
             Gizmos.color = Color.red;
             Gizmos.DrawLine(transform.position, transform.position + (Vector3)jumpDirection);
+            Vector3 line = new Vector3(0, 15, 0);
+
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(leftBuilding.position - line, leftBuilding.position + line);
+            Gizmos.DrawLine(rightBuilding.position - line, rightBuilding.position + line);
+
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y -_groundDistance));
         }
         #endregion
     }

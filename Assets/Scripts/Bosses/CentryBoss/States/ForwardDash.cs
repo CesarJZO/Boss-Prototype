@@ -5,14 +5,15 @@ namespace EKP.Bosses.Centry
     public class ForwardDash : BossState<CentryBoss>
     {
         Vector2 _target;
-        Vector2 _velocity = Vector3.zero;
+        Vector2 _velocity = Vector2.zero;
         public ForwardDash(CentryBoss boss, BossMachine<CentryBoss> bossMachine) : base(boss, bossMachine) { }
 
         public override void Enter()
         {
             base.Enter();
-            Debug.Log("Forward dash: Enter");
+            // Debug.Log("Forward dash: Enter");
             boss.OnChangeState?.Invoke("Forward dash");
+            boss.target = boss.leftBuilding.position;
         }
 
         public override void PhysicsUpdate()
@@ -22,9 +23,14 @@ namespace EKP.Bosses.Centry
                 boss.transform.position, boss.leftBuilding.position,
                 ref _velocity, boss.smoothTime
             ));
-            // Debug.Log(Vector2.Distance(boss.transform.position, boss.leftBuilding.position));
-            if (Vector2.Distance(boss.transform.position, boss.leftBuilding.position) < 0.55f)
+            if (boss.CloseToTarget)
                 bossMachine.ChangeState(boss.idling);
+        }
+
+        public override void Exit()
+        {
+            base.Exit();
+            boss.target = boss.rightBuilding.position;
         }
     }
 }

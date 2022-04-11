@@ -27,12 +27,12 @@ namespace EKP.Bosses.Centry
 
             if (boss.preSwordAttack.counter < _totalOfSwordAttacks)
             {
-                Debug.Log($"Sword attacks so far: {boss.preSwordAttack.counter}");
+                // Debug.Log($"Sword attacks so far: {boss.preSwordAttack.counter}");
                 bossMachine.ChangeState(boss.preSwordAttack);
             }
             else
             {
-                Debug.Log("Enough of sword, lo que caiga!");
+                // Debug.Log("Enough of sword, lo que caiga!");
                 StartRandomMove(Random.Range(1, 5));
             }
         }
@@ -49,8 +49,8 @@ namespace EKP.Bosses.Centry
         }
 
         void Move()
-        {   // TODO: If touching leftBuilding, jump, if touching rightBuilding, dash
-            if (Random.Range(0, 2) % 2 == 0)
+        {
+            if (boss.target == (Vector2)boss.leftBuilding.position)
                 bossMachine.ChangeState(boss.forwardDash);
             else
                 bossMachine.ChangeState(boss.backJump);

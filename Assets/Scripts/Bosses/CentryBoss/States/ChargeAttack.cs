@@ -9,14 +9,14 @@ namespace EKP.Bosses.Centry
         public override void Enter()
         {
             base.Enter();
-            Debug.Log("Charge attack: Enter");
+            // Debug.Log("Charge attack: Enter");
             boss.OnChangeState?.Invoke("Charge Attack");
             boss.StartCoroutine(Attack());
         }
 
         IEnumerator Attack()
         {
-            yield return new WaitForSeconds(2);
+            yield return new WaitForSeconds(boss.attacksDuration);
             bossMachine.ChangeState(boss.idling);
         }
 

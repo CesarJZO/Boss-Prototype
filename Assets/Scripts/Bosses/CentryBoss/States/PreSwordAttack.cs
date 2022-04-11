@@ -10,7 +10,7 @@ namespace EKP.Bosses.Centry
         public override void Enter()
         {
             base.Enter();
-            Debug.Log("Sword attack: Anticipation");
+            // Debug.Log("Sword attack: Anticipation");
             boss.OnChangeState?.Invoke("Pre Sword Attack");
             counter++;
             boss.StartCoroutine(Anticipate());
@@ -18,7 +18,7 @@ namespace EKP.Bosses.Centry
 
         IEnumerator Anticipate()
         {
-            yield return new WaitForSeconds(2);
+            yield return new WaitForSeconds(boss.attacksDuration);
             bossMachine.ChangeState(boss.swordAttack);
         }
 

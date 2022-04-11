@@ -9,14 +9,14 @@ namespace EKP.Bosses.Centry
         public override void Enter()
         {
             base.Enter();
-            Debug.Log("Spike attack: Anticipation");
+            // Debug.Log("Spike attack: Anticipation");
             boss.OnChangeState?.Invoke("Pre Spike Attack");
             boss.StartCoroutine(Anticipate());
         }
 
         IEnumerator Anticipate()
         {
-            yield return new WaitForSeconds(2);
+            yield return new WaitForSeconds(boss.attacksDuration);
             bossMachine.ChangeState(boss.spikeAttack);
         }
 
