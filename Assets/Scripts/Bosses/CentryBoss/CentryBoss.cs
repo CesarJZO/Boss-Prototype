@@ -26,14 +26,20 @@ namespace EKP.Bosses.Centry
         [SerializeField, Range(0f, 180f)] float jumpAngle;
         public float jumpStrength;
         public float fallingDrag;
+
+        [Header("Player")]
+        public GameObject player;
+
         [HideInInspector] public Vector2 jumpDirection;
         public UnityEvent<string> OnChangeState;
 
-        public RaycastHit2D Grounded => Physics2D.Raycast(transform.position, Vector2.down, _groundDistance, _groundLayer);
+        public bool Grounded => Physics2D.Raycast(
+            transform.position, Vector2.down, _groundDistance, _groundLayer
+        );
         public bool CloseToTarget => Vector2.Distance(body.position, target) < _margin;
         public bool IsAlignedWithTarget => Vector2.Distance(
             new Vector2(transform.position.x, 0), new Vector2(target.x, 0)
-        ) < _margin;
+        ) < 0.1f;
 
         [HideInInspector] public Rigidbody2D body;
         [HideInInspector] public Vector2 target;
@@ -98,7 +104,7 @@ namespace EKP.Bosses.Centry
             Gizmos.DrawLine(transform.position, transform.position + Quaternion.Euler(0, 0, jumpAngle) * Vector3.right);
 
             Gizmos.color = Color.blue;
-            float distance = 30;
+            float distance = 100;
             Gizmos.DrawLine(leftBuilding.position + Vector3.down * distance, leftBuilding.position + Vector3.up * distance);
             Gizmos.DrawLine(rightBuilding.position + Vector3.down * distance, rightBuilding.position + Vector3.up * distance);
 
@@ -106,5 +112,13 @@ namespace EKP.Bosses.Centry
             Gizmos.DrawLine(transform.position, Vector3.down * _groundDistance + transform.position);
         }
         #endregion
+
+        public void SwitchTarget()
+        {
+            if (target == (Vector2) leftBuilding.position)
+                target = rightBuilding.position;
+            else
+                target = leftBuilding.position;
+        }
     }
 }

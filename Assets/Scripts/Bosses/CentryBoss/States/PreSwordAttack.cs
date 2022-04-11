@@ -4,6 +4,8 @@ namespace EKP.Bosses.Centry
 {
     public class PreSwordAttack : BossState<CentryBoss>
     {
+        private Vector2 _velocity;
+        private Vector2 _target;
         public int counter { get; private set; } = 0;
         public PreSwordAttack(CentryBoss boss, BossMachine<CentryBoss> bossMachine) : base(boss, bossMachine) {}
 
@@ -13,12 +15,21 @@ namespace EKP.Bosses.Centry
             // Debug.Log("Sword attack: Anticipation");
             boss.OnChangeState?.Invoke("Pre Sword Attack");
             counter++;
+            _target = boss.player.transform.position;
             boss.StartCoroutine(Anticipate());
+        }
+
+        public override void PhysicsUpdate()
+        {
+            base.PhysicsUpdate();
+            boss.body.MovePosition(Vector2.SmoothDamp(
+                boss.body.position, _target, ref _velocity, boss.smoothTime
+            ));
         }
 
         IEnumerator Anticipate()
         {
-            yield return new WaitForSeconds(boss.attacksDuration);
+            yield return new WaitForSeconds(boss.smoothTime * 2);
             bossMachine.ChangeState(boss.swordAttack);
         }
 

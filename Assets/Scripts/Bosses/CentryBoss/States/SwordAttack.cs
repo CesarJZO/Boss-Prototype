@@ -16,8 +16,11 @@ namespace EKP.Bosses.Centry
 
         IEnumerator Attack()
         {
-            yield return new WaitForSeconds(boss.attacksDuration);
-            bossMachine.ChangeState(boss.idling);
+            // Attack
+            boss.body.drag = boss.fallingDrag;
+            yield return new WaitForSeconds(0.5f);
+            boss.body.drag = 0;
+            bossMachine.ChangeState(boss.forwardDash);
         }
 
         public override void Exit()
