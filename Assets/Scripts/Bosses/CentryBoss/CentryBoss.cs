@@ -9,13 +9,12 @@ namespace EKP.Bosses.Centry
         [Header("Debug")]
         public bool automaticBehaviour;
         [SerializeField] LayerMask _groundLayer;
-        public float _groundDistance;
+        [SerializeField] float _groundDistance;
         [SerializeField] float _margin;
 
-        [Header("Waiting time range")]
-        public float minTime;
-        public float maxTime;
-        public float attacksDuration;
+        [Header("Sword attack")]
+        public float swordDuration;
+        public float swordDrag;
 
         [Header("Movement")]
         public float smoothTime;
@@ -24,8 +23,14 @@ namespace EKP.Bosses.Centry
 
         [Header("Jump")]
         [SerializeField, Range(0f, 180f)] float jumpAngle;
+        [SerializeField] float _alignmentMargin;
         public float jumpStrength;
         public float fallingDrag;
+        
+        [Header("Waiting time range")]
+        public float minTime;
+        public float maxTime;
+        public float attacksDuration;
 
         [Header("Player")]
         public GameObject player;
@@ -39,7 +44,7 @@ namespace EKP.Bosses.Centry
         public bool CloseToTarget => Vector2.Distance(body.position, target) < _margin;
         public bool IsAlignedWithTarget => Vector2.Distance(
             new Vector2(transform.position.x, 0), new Vector2(target.x, 0)
-        ) < 0.1f;
+        ) < _alignmentMargin;
 
         [HideInInspector] public Rigidbody2D body;
         [HideInInspector] public Vector2 target;

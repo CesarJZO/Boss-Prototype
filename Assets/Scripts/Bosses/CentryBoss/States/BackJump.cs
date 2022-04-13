@@ -17,10 +17,10 @@ namespace EKP.Bosses.Centry
         public override void PhysicsUpdate()
         {
             base.LogicUpdate();
-            if (boss.CloseToTarget && boss.Grounded)
-                bossMachine.ChangeState(boss.idling);
             if (boss.IsAlignedWithTarget)
                 boss.body.drag = boss.fallingDrag;
+            if (boss.Grounded)
+                bossMachine.ChangeState(boss.idling);
         }
 
         public override void Exit()

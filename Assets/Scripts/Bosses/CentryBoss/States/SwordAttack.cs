@@ -16,9 +16,9 @@ namespace EKP.Bosses.Centry
 
         IEnumerator Attack()
         {
+            boss.body.drag = boss.swordDrag;
             // Attack
-            boss.body.drag = boss.fallingDrag;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(boss.swordDuration);
             boss.body.drag = 0;
             bossMachine.ChangeState(boss.forwardDash);
         }
