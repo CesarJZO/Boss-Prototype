@@ -12,6 +12,13 @@ namespace EKP.Bosses.Centry
         [SerializeField] float _groundDistance;
         [SerializeField] float _margin;
 
+        [Header("Spike attack")]
+        public GameObject centryFlock;
+        public float centriesMaxSpeed;
+        public float fallSpeed;
+        [Range(-12f, 0f)] public float centriesMinPosition;
+        [Range(0, 12f)] public float centriesMaxPosition;
+        
         [Header("Sword attack")]
         public float swordDuration;
         public float swordDrag;
@@ -22,7 +29,7 @@ namespace EKP.Bosses.Centry
         public Transform rightBuilding;
 
         [Header("Jump")]
-        [SerializeField, Range(0f, 180f)] float jumpAngle;
+        [SerializeField, Range(0f, 90f)] float jumpAngle;
         [SerializeField] float _alignmentMargin;
         public float jumpStrength;
         public float fallingDrag;
@@ -41,11 +48,10 @@ namespace EKP.Bosses.Centry
         public bool Grounded => Physics2D.Raycast(
             transform.position, Vector2.down, _groundDistance, _groundLayer
         );
-        public bool CloseToTarget => Vector2.Distance(body.position, target) < _margin;
+        public bool CloseToTarget => Vector2.Distance(body.position, target) <= _margin;
         public bool IsAlignedWithTarget => Vector2.Distance(
             new Vector2(transform.position.x, 0), new Vector2(target.x, 0)
-        ) < _alignmentMargin;
-
+        ) <= _alignmentMargin;
         [HideInInspector] public Rigidbody2D body;
         [HideInInspector] public Vector2 target;
         BossMachine<CentryBoss> _bossMachine;
@@ -77,7 +83,6 @@ namespace EKP.Bosses.Centry
             spikeAttack = new SpikeAttack(this, _bossMachine);
 
             body = GetComponent<Rigidbody2D>();
-            
         }
 
         void Start()
@@ -115,6 +120,9 @@ namespace EKP.Bosses.Centry
 
             Gizmos.color = Color.cyan;
             Gizmos.DrawLine(transform.position, Vector3.down * _groundDistance + transform.position);
+
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(centryFlock.transform.position + Vector3.right * centriesMinPosition, centryFlock.transform.position + Vector3.right * centriesMaxPosition);
         }
         #endregion
 
