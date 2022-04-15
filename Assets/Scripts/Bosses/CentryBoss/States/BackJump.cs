@@ -10,7 +10,6 @@ namespace EKP.Bosses.Centry
             base.Enter();
             // Debug.Log("Back jump: Enter");
             boss.OnChangeState?.Invoke("Back Jump");
-            boss.target = boss.rightBuilding.position;
             boss.body.AddForce(boss.jumpDirection * boss.jumpStrength, ForceMode2D.Impulse);
         }
 
@@ -23,10 +22,14 @@ namespace EKP.Bosses.Centry
                 bossMachine.ChangeState(boss.idling);
         }
 
+        void SwitchDirection()
+        {
+            boss.jumpDirection.x *= -1;
+        }
+
         public override void Exit()
         {
             base.Exit();
-            boss.target = boss.leftBuilding.position;
             boss.body.drag = 0;
         }
     }

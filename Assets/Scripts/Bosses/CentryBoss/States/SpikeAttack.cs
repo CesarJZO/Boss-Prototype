@@ -30,11 +30,12 @@ namespace EKP.Bosses.Centry
         IEnumerator Attack()
         {
             float elapsed = 0;
-
             while (elapsed <= boss.attacksDuration)
             {
-                boss.centryFlock.transform.position = Vector2.Lerp(boss.centryFlock.transform.position, _target, easeInBack(Mathf.InverseLerp(0, boss.attacksDuration, elapsed)));
                 elapsed += Time.deltaTime;
+                float x = Mathf.Sin(Mathf.InverseLerp(0, boss.attacksDuration, elapsed)
+                                    * 90 * Mathf.Deg2Rad);
+                boss.centryFlock.transform.position = Vector2.Lerp(boss.centryFlock.transform.position, _target, x);
                 yield return null;
             }
             bossMachine.ChangeState(boss.idling);
@@ -42,7 +43,7 @@ namespace EKP.Bosses.Centry
 
         float easeInBack(float x)
         {
-            const float c1 = 1.70158f;
+            const float c1 = 1f;
             const float c3 = c1 + 1;
             return c3 * x * x * x - c1 * x * x;
         }
