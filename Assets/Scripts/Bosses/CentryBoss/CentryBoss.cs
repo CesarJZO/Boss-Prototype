@@ -6,54 +6,61 @@ namespace EKP.Bosses.Centry
 {
     public class CentryBoss : MonoBehaviour
     {
-        [Header("Debug")]
-        public bool automaticBehaviour;
-        [SerializeField] LayerMask _groundLayer;
-        [SerializeField] float _groundDistance;
-        [SerializeField] float _margin;
+        public float attacksDuration;
 
-        [Header("Spike attack")]
-        public GameObject centryFlock;
-        public float centriesMaxSpeed;
-        public float fallSpeed;
-        [Range(-12f, 0f)] public float centriesMinPosition;
-        [Range(0, 12f)] public float centriesMaxPosition;
-        
-        [Header("Sword attack")]
-        public float swordDuration;
-        public float swordDrag;
+        [Header("Idle")]
+        public bool automaticBehaviour;
+        public float minTime;
+        public float maxTime;
 
         [Header("Movement")]
         public float smoothTime;
         public Transform leftBuilding;
         public Transform rightBuilding;
-
-        [Header("Jump")]
-        [SerializeField, Range(0f, 90f)] float jumpAngle;
         [SerializeField] float _alignmentMargin;
+        public bool IsAlignedWithTarget => Vector2.Distance(
+            new Vector2(transform.position.x, 0), new Vector2(buildingTarget.x, 0)
+        ) <= _alignmentMargin;
+        [HideInInspector] public Vector3 buildingTarget;
+
+
+        [Header("Forward Dash")]
+        public float dashDuration;
+
+
+        [Header("Back Jump")]
+        [SerializeField] LayerMask _groundLayer;
+        [SerializeField, Range(0f, 90f)] float jumpAngle;
         public float jumpStrength;
         public float fallingDrag;
-        
-        [Header("Waiting time range")]
-        public float minTime;
-        public float maxTime;
-        public float attacksDuration;
+        [SerializeField] float _groundDistance;
+        public bool Grounded => Physics2D.Raycast(
+            body.position, Vector2.down, _groundDistance, _groundLayer
+        );
+        [HideInInspector] public Vector2 jumpDirection;
+
+
+        [Header("Sword attack")]
+        public float swordDuration;
+        public float swordDrag;
+
+
+        [Header("Spike attack")]
+        public float spikeAnticipationTime;
+        public float centriesMaxSpeed;
+        public float fallDuration;
+        public GameObject centryFlock;
+        [Range(-12f, 0f)] public float centriesMinPosition;
+        [Range(0, 12f)] public float centriesMaxPosition;
+
 
         [Header("Player")]
         public GameObject player;
 
-        [HideInInspector] public Vector2 jumpDirection;
         public UnityEvent<string> OnChangeState;
 
-        public bool Grounded => Physics2D.Raycast(
-            transform.position, Vector2.down, _groundDistance, _groundLayer
-        );
-        public bool CloseToTarget => Vector2.Distance(body.position, target) <= _margin;
-        public bool IsAlignedWithTarget => Vector2.Distance(
-            new Vector2(transform.position.x, 0), new Vector2(target.x, 0)
-        ) <= _alignmentMargin;
         [HideInInspector] public Rigidbody2D body;
-        [HideInInspector] public Vector2 target;
+        private CapsuleCollider2D _collider;
         BossMachine<CentryBoss> _bossMachine;
 
         #region States
@@ -83,11 +90,12 @@ namespace EKP.Bosses.Centry
             spikeAttack = new SpikeAttack(this, _bossMachine);
 
             body = GetComponent<Rigidbody2D>();
+            _collider = GetComponent<CapsuleCollider2D>();
         }
 
         void Start()
         {
-            target = leftBuilding.position;
+            buildingTarget = leftBuilding.position;
             _bossMachine.Initialize(idling);
         }
 
@@ -110,8 +118,9 @@ namespace EKP.Bosses.Centry
 
         void OnDrawGizmos()
         {
+            _collider = GetComponent<CapsuleCollider2D>();
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, transform.position + Quaternion.Euler(0, 0, jumpAngle) * Vector3.right);
+            Gizmos.DrawLine(transform.position + (Vector3)_collider.offset, transform.position + (Vector3)_collider.offset + Quaternion.Euler(0, 0, jumpAngle) * Vector3.right);
 
             Gizmos.color = Color.blue;
             float distance = 100;
@@ -119,7 +128,7 @@ namespace EKP.Bosses.Centry
             Gizmos.DrawLine(rightBuilding.position + Vector3.down * distance, rightBuilding.position + Vector3.up * distance);
 
             Gizmos.color = Color.cyan;
-            Gizmos.DrawLine(transform.position, Vector3.down * _groundDistance + transform.position);
+            Gizmos.DrawLine((Vector2)transform.position + _collider.offset, (Vector2)transform.position + Vector2.down * _groundDistance + _collider.offset);
 
             Gizmos.color = Color.green;
             Gizmos.DrawLine(centryFlock.transform.position + Vector3.right * centriesMinPosition, centryFlock.transform.position + Vector3.right * centriesMaxPosition);
@@ -128,10 +137,10 @@ namespace EKP.Bosses.Centry
 
         public void SwitchTarget()
         {
-            if (target == (Vector2) leftBuilding.position)
-                target = rightBuilding.position;
+            if (buildingTarget == leftBuilding.position)
+                buildingTarget = rightBuilding.position;
             else
-                target = leftBuilding.position;
+                buildingTarget = leftBuilding.position;
         }
     }
 }

@@ -4,8 +4,9 @@ namespace EKP.Bosses.Centry
 {
     public class ForwardDash : BossState<CentryBoss>
     {
-        Vector2 _target;
-        Vector2 _velocity = Vector2.zero;
+        private float _elapsed;
+        private Vector2 _initialPosition;
+        private Vector2 _targetPosition;
         public ForwardDash(CentryBoss boss, BossMachine<CentryBoss> bossMachine) : base(boss, bossMachine) { }
 
         public override void Enter()
@@ -13,24 +14,26 @@ namespace EKP.Bosses.Centry
             base.Enter();
             // Debug.Log("Forward dash: Enter");
             boss.OnChangeState?.Invoke("Forward dash");
-            boss.target = boss.leftBuilding.position;
+            _elapsed = 0;
+            _initialPosition = boss.transform.position;
+            _targetPosition = boss.buildingTarget;
         }
 
-        public override void PhysicsUpdate()
+        public override void LogicUpdate()
         {
-            base.PhysicsUpdate();
-            boss.body.MovePosition(Vector2.SmoothDamp(
-                boss.transform.position, boss.leftBuilding.position,
-                ref _velocity, boss.smoothTime
-            ));
-            if (boss.CloseToTarget)
+            base.LogicUpdate();
+            float t = Mathf.InverseLerp(0, boss.dashDuration, _elapsed);
+            t = Mathf.Sin(t * 90 * Mathf.Deg2Rad);
+            boss.transform.position = Vector2.Lerp(_initialPosition, _targetPosition, t);
+            _elapsed += Time.deltaTime;
+            if (boss.transform.position == boss.buildingTarget)
                 bossMachine.ChangeState(boss.idling);
         }
 
         public override void Exit()
         {
             base.Exit();
-            boss.target = boss.rightBuilding.position;
+            boss.SwitchTarget();
         }
     }
 }

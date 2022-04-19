@@ -6,7 +6,7 @@ namespace EKP.Bosses.Centry
     {
         private Vector2 _velocity;
         private Vector2 _target;
-        public int counter { get; private set; } = 0;
+        public int Counter { get; private set; } = 0;
         public PreSwordAttack(CentryBoss boss, BossMachine<CentryBoss> bossMachine) : base(boss, bossMachine) {}
 
         public override void Enter()
@@ -14,7 +14,7 @@ namespace EKP.Bosses.Centry
             base.Enter();
             // Debug.Log("Sword attack: Anticipation");
             boss.OnChangeState?.Invoke("Pre Sword Attack");
-            counter++;
+            Counter++;
             _target = boss.player.transform.position;
             boss.StartCoroutine(Anticipate());
         }

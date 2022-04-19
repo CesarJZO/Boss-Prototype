@@ -5,8 +5,8 @@ namespace EKP.Bosses.Centry
     public class SpikeAttack : BossState<CentryBoss>
     {
         private RaycastHit2D _ground;
-        private Vector2 _target;
-        private float _totalDistance;
+        private Vector2 _targetPoint;
+        private Vector2 _initialPoint;
 
         public SpikeAttack(CentryBoss boss, BossMachine<CentryBoss> bossMachine) : base(boss, bossMachine) { }
 
@@ -15,11 +15,11 @@ namespace EKP.Bosses.Centry
             base.Enter();
             // Debug.Log("Spike attack: Enter");
             boss.OnChangeState?.Invoke("Spike Attack");
-            boss.StartCoroutine(Attack());
             _ground = Physics2D.Raycast(boss.centryFlock.transform.position, Vector2.down);
-            _target = _ground.point;
+            _initialPoint = boss.centryFlock.transform.position;
+            _targetPoint = _ground.point;
+            boss.StartCoroutine(Attack());
             boss.centryFlock.GetComponent<Rigidbody2D>().simulated = true;
-            _totalDistance = _ground.distance;
         }
 
         public override void LogicUpdate()
@@ -30,22 +30,20 @@ namespace EKP.Bosses.Centry
         IEnumerator Attack()
         {
             float elapsed = 0;
-            while (elapsed <= boss.attacksDuration)
+            while (elapsed <= boss.fallDuration)
             {
                 elapsed += Time.deltaTime;
-                float x = Mathf.Sin(Mathf.InverseLerp(0, boss.attacksDuration, elapsed)
-                                    * 90 * Mathf.Deg2Rad);
-                boss.centryFlock.transform.position = Vector2.Lerp(boss.centryFlock.transform.position, _target, x);
+                float x = Mathf.InverseLerp(0, boss.fallDuration, elapsed);
+                float t = EaseInBack(x);
+                boss.centryFlock.transform.position = Vector2.LerpUnclamped(_initialPoint, _targetPoint, t);
                 yield return null;
             }
             bossMachine.ChangeState(boss.idling);
         }
 
-        float easeInBack(float x)
+        float EaseInBack(float x)
         {
-            const float c1 = 1f;
-            const float c3 = c1 + 1;
-            return c3 * x * x * x - c1 * x * x;
+            return 2.8f * Mathf.Pow(x, 3) - 1.8f * Mathf.Pow(x, 2);
         }
 
         public override void Exit()
