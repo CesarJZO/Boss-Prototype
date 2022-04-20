@@ -15,7 +15,7 @@ namespace EKP.Bosses.Centry
             // Debug.Log("Forward dash: Enter");
             boss.OnChangeState?.Invoke("Forward dash");
             _elapsed = 0;
-            _initialPosition = boss.transform.position;
+            _initialPosition = boss.Position;
             _targetPosition = boss.buildingTarget;
         }
 
@@ -26,7 +26,7 @@ namespace EKP.Bosses.Centry
             t = Mathf.Sin(t * 90 * Mathf.Deg2Rad);
             boss.transform.position = Vector2.Lerp(_initialPosition, _targetPosition, t);
             _elapsed += Time.deltaTime;
-            if (boss.transform.position == boss.buildingTarget)
+            if (boss.Position == boss.buildingTarget)
                 bossMachine.ChangeState(boss.idling);
         }
 

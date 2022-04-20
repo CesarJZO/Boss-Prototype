@@ -16,7 +16,7 @@ namespace EKP.Bosses.Centry
 
         IEnumerator Anticipate()
         {
-            yield return new WaitForSeconds(boss.attacksDuration);
+            yield return new WaitForSeconds(boss.chargeAnticipationTime);
             bossMachine.ChangeState(boss.chargeAttack);
         }
 

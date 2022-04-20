@@ -6,8 +6,6 @@ namespace EKP.Bosses.Centry
 {
     public class CentryBoss : MonoBehaviour
     {
-        public float attacksDuration;
-
         [Header("Idle")]
         public bool automaticBehaviour;
         public float minTime;
@@ -17,11 +15,15 @@ namespace EKP.Bosses.Centry
         public float smoothTime;
         public Transform leftBuilding;
         public Transform rightBuilding;
+
+        public Vector2 Position => transform.position;
+        public Vector2 CenterOffset => _collider.offset;
+
         [SerializeField] float _alignmentMargin;
-        public bool IsAlignedWithTarget => Vector2.Distance(
+        public bool NearOfTargetBuilding => Vector2.Distance(
             new Vector2(transform.position.x, 0), new Vector2(buildingTarget.x, 0)
         ) <= _alignmentMargin;
-        [HideInInspector] public Vector3 buildingTarget;
+        [HideInInspector] public Vector2 buildingTarget;
 
 
         [Header("Forward Dash")]
@@ -30,28 +32,35 @@ namespace EKP.Bosses.Centry
 
         [Header("Back Jump")]
         [SerializeField] LayerMask _groundLayer;
-        [SerializeField, Range(0f, 90f)] float jumpAngle;
-        public float jumpStrength;
+        [Range(0f, 90f)] public float jumpAngle;
+        public float jumpSpeed;
+        public float rotationSpeed;
         public float fallingDrag;
         [SerializeField] float _groundDistance;
         public bool Grounded => Physics2D.Raycast(
-            body.position, Vector2.down, _groundDistance, _groundLayer
+            Position + CenterOffset, Vector2.down, _groundDistance, _groundLayer
         );
         [HideInInspector] public Vector2 jumpDirection;
 
 
         [Header("Sword attack")]
+        public float swordAnticipationTime;
         public float swordDuration;
         public float swordDrag;
 
 
         [Header("Spike attack")]
         public float spikeAnticipationTime;
-        public float centriesMaxSpeed;
         public float fallDuration;
         public GameObject centryFlock;
+        public float centriesMaxSpeed;
         [Range(-12f, 0f)] public float centriesMinPosition;
         [Range(0, 12f)] public float centriesMaxPosition;
+
+
+        [Header("Charge Attack")]
+        public float chargeAnticipationTime;
+        public float chargeSpeed;
 
 
         [Header("Player")]
@@ -97,12 +106,12 @@ namespace EKP.Bosses.Centry
         {
             buildingTarget = leftBuilding.position;
             _bossMachine.Initialize(idling);
+            jumpDirection = Quaternion.Euler(0, 0, jumpAngle) * Vector2.right;
         }
 
         void Update()
         {
             _bossMachine.CurrentState.LogicUpdate();
-            jumpDirection = Quaternion.Euler(0, 0, jumpAngle) * Vector2.right;
             // * Debug: Restart
             if (Keyboard.current.rKey.wasPressedThisFrame)
             {
@@ -137,7 +146,7 @@ namespace EKP.Bosses.Centry
 
         public void SwitchTarget()
         {
-            if (buildingTarget == leftBuilding.position)
+            if (buildingTarget == (Vector2) leftBuilding.position)
                 buildingTarget = rightBuilding.position;
             else
                 buildingTarget = leftBuilding.position;

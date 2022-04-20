@@ -4,22 +4,37 @@ namespace EKP.Bosses.Centry
 {
     public class BackJump : BossState<CentryBoss>
     {
+        private float _angle;
+        private Vector2 _originalDirection;
         public BackJump(CentryBoss boss, BossMachine<CentryBoss> bossMachine) : base(boss, bossMachine) { }
         public override void Enter()
         {
             base.Enter();
             // Debug.Log("Back jump: Enter");
             boss.OnChangeState?.Invoke("Back Jump");
-            boss.body.AddForce(boss.jumpDirection * boss.jumpStrength, ForceMode2D.Impulse);
+            _originalDirection = boss.jumpDirection;
+            _angle = boss.jumpAngle;
         }
 
-        public override void PhysicsUpdate()
+        public override void LogicUpdate()
         {
             base.LogicUpdate();
-            if (boss.IsAlignedWithTarget)
-                boss.body.drag = boss.fallingDrag;
-            if (boss.Grounded)
-                bossMachine.ChangeState(boss.idling);
+            boss.transform.Translate(boss.jumpDirection * Time.deltaTime * boss.jumpSpeed);
+            _angle = Mathf.Clamp(_angle, -90, 90);
+            if (boss.NearOfTargetBuilding)
+            {
+                if (boss.jumpDirection.normalized != Vector2.down)
+                    RotateDirection();
+                if (boss.Grounded)
+                    bossMachine.ChangeState(boss.idling);
+            } 
+        }
+
+        void RotateDirection()
+        {
+            if (boss.jumpDirection.normalized == Vector2.down) return;
+            boss.jumpDirection = Quaternion.Euler(0, 0, _angle) * Vector2.right;
+            _angle -= boss.rotationSpeed * Time.deltaTime;
         }
 
         void SwitchDirection()
@@ -30,7 +45,7 @@ namespace EKP.Bosses.Centry
         public override void Exit()
         {
             base.Exit();
-            boss.body.drag = 0;
+            boss.jumpDirection = _originalDirection;
         }
     }
 }
