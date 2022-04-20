@@ -4,48 +4,55 @@ namespace EKP.Bosses.Centry
 {
     public class BackJump : BossState<CentryBoss>
     {
-        private float _angle;
-        private Vector2 _originalDirection;
+        bool falling;
         public BackJump(CentryBoss boss, BossMachine<CentryBoss> bossMachine) : base(boss, bossMachine) { }
         public override void Enter()
         {
             base.Enter();
             // Debug.Log("Back jump: Enter");
             boss.OnChangeState?.Invoke("Back Jump");
-            _originalDirection = boss.jumpDirection;
-            _angle = boss.jumpAngle;
+            boss.body.bodyType = RigidbodyType2D.Dynamic;
+            falling = false;
+            SetDirection();
+            boss.body.AddForce(boss.jumpDirection * boss.jumpSpeed, ForceMode2D.Impulse);
         }
 
         public override void LogicUpdate()
         {
             base.LogicUpdate();
-            boss.transform.Translate(boss.jumpDirection * Time.deltaTime * boss.jumpSpeed);
-            _angle = Mathf.Clamp(_angle, -90, 90);
             if (boss.NearOfTargetBuilding)
             {
-                if (boss.jumpDirection.normalized != Vector2.down)
-                    RotateDirection();
+                if (!falling)
+                {
+                    boss.body.drag = boss.fallingDrag;
+                    falling = true;
+                    boss.StartCoroutine(AhoritaLeCambioElNombre());
+                }
                 if (boss.Grounded)
                     bossMachine.ChangeState(boss.idling);
-            } 
+            }
         }
 
-        void RotateDirection()
+        IEnumerator AhoritaLeCambioElNombre()
         {
-            if (boss.jumpDirection.normalized == Vector2.down) return;
-            boss.jumpDirection = Quaternion.Euler(0, 0, _angle) * Vector2.right;
-            _angle -= boss.rotationSpeed * Time.deltaTime;
+            yield return new WaitForSeconds(0.1f);
+            boss.body.drag = 0;
+            boss.body.AddForce(Vector2.down);
         }
 
-        void SwitchDirection()
+        void SetDirection()
         {
-            boss.jumpDirection.x *= -1;
+            boss.jumpDirection.x = Mathf.Abs(boss.jumpDirection.x);
+            if (boss.buildingTarget == (Vector2) boss.leftBuilding.position)
+                boss.jumpDirection.x *= -1;
         }
 
         public override void Exit()
         {
             base.Exit();
-            boss.jumpDirection = _originalDirection;
+            boss.body.bodyType = RigidbodyType2D.Kinematic;
+            boss.StopCoroutine(AhoritaLeCambioElNombre());
+            boss.SwitchTarget();
         }
     }
 }
