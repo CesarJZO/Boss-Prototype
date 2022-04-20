@@ -944,10 +944,10 @@ MonoBehaviour:
   _groundLayer:
     serializedVersion: 2
     m_Bits: 256
-  jumpAngle: 25
+  jumpAngle: 60
   jumpSpeed: 35
-  rotationSpeed: 450
-  fallingDrag: 15
+  rotationSpeed: 30
+  fallingDrag: 2
   _groundDistance: 1.64
   jumpDirection: {x: 0.4226182, y: 0.9063078}
   swordAnticipationTime: 0.2
@@ -1013,7 +1013,7 @@ Rigidbody2D:
   m_Material: {fileID: 6200000, guid: 505a5dedbbfeef44ab6962d8de34818e, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!70 &1083587553
 CapsuleCollider2D:
